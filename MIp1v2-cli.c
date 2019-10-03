@@ -6,20 +6,15 @@
 #include <netinet/in.h> 
 #include <arpa/inet.h> 
 #include <unistd.h> 
+#include "MIp1v2-t.h"
 int main(int argc,char *argv[]) 
 { 
- int scon, i; 
- int bytes_llegits, bytes_escrits; 
- char buffer[200]; 
- struct sockaddr_in adrrem; 
- char iprem[16]; 
- int portrem; 
  int s1=0;
  
- TCP_CreaSockClient("88.8.12.3,TCP,2000");
- TCP_DemanaConnexio(s1,"23.3.1.5,TCP,3678");
- TCP_Envia(s1,"Com va això?");
- TCP_Envia(s1,"Estàs bé?");
+ s1 = TCP_CreaSockClient("88.8.12.3",2000);
+ TCP_DemanaConnexio(s1,"23.3.1.5",3678);
+ TCP_Envia(s1,"Com va això?", sizeof("Com va això?"));
+ TCP_Envia(s1,"Estàs bé?", sizeof("Estàs bé?"));
  TCP_TancaSock(s1);
  
  return(0); 
