@@ -72,7 +72,8 @@ int TCP_CreaSockServidor(const char *IPloc, int portTCPloc)
 	
 	if((sesc=socket(AF_INET,SOCK_STREAM,0))==-1)
 	{
-		return -1;
+		perror("Error en socket");
+		exit(-1);
 	}
 	 
 	 adrloc.sin_family=AF_INET; 
