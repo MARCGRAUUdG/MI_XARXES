@@ -11,8 +11,19 @@
 /* Inclusió de llibreries, p.e. #include <sys/types.h> o #include "meu.h" */
 /*  (si les funcions externes es cridessin entre elles, faria falta fer   */
 /*   un #include del propi fitxer .h)                                     */
+#include <stdio.h>
 #include <string.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 #include <errno.h>
+#include <stdlib.h> 
+#include <stdio.h> 
+#include <string.h> 
+#include <sys/types.h> 
+#include <sys/socket.h> 
+#include <netinet/in.h> 
+#include <arpa/inet.h> 
+#include <unistd.h> 
 
 /* Definició de constants, p.e., #define XYZ       1500                   */
 
@@ -35,8 +46,7 @@
 /* va bé.                                                                 */
 int TCP_CreaSockClient(const char *IPloc, int portTCPloc)
 {
-	int scon, i;
-	struct sockaddr_in adrloc;
+	int scon;
 	
 	if((scon=socket(AF_INET,SOCK_STREAM,0))==-1) 
 	{ 
@@ -110,7 +120,7 @@ int TCP_DemanaConnexio(int Sck, const char *IPrem, int portTCPrem)
 	  close(Sck); 
 	  exit(-1); 
 	 } 
-	 return ;
+	 return 0;
 }
 
 /* El socket TCP “servidor” d’identificador “Sck” accepta fer una         */
@@ -130,7 +140,7 @@ int TCP_AcceptaConnexio(int Sck, char *IPrem, int *portTCPrem)
 	int scon;
 	struct sockaddr_in adrrem; 
 	 
-	long_adrrem=sizeof(adrrem); 
+	int long_adrrem=sizeof(adrrem); 
 	 if((scon=accept(Sck,(struct sockaddr*)&adrrem, &long_adrrem))==-1) 
 	 { 
 	  perror("Error en accept"); 
@@ -170,7 +180,7 @@ int TCP_Envia(int Sck, const char *SeqBytes, int LongSeqBytes)
 int TCP_Rep(int Sck, char *SeqBytes, int LongSeqBytes)
 {
 	int bytes_llegits;
-	if((bytes_llegits=read(Sck,SeqBytes,LongSeqBytes)==-1) 
+	if(bytes_llegits=read(Sck,SeqBytes,LongSeqBytes)==-1) 
 	 { 
 		  perror("Error en read"); 
 		  close(Sck); 
