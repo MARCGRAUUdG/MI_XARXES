@@ -15,8 +15,6 @@ int main(int argc,char *argv[])
  char iprem[16]; 
  int portrem; 
  int s1=0;
- /* Es crea el socket TCP scon del client (el socket "local"), que de moment no té       */ 
- /* adreça (@IP i #port TCP) assignada.                                                  */ 
  
  TCP_CreaSockClient("88.8.12.3,TCP,2000");
  TCP_DemanaConnexio(s1,"23.3.1.5,TCP,3678");
