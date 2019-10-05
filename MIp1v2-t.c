@@ -148,7 +148,8 @@ int TCP_AcceptaConnexio(int Sck, char *IPrem, int *portTCPrem)
 	  close(Sck); 
 	  exit(-1); 
 	 } 
-	 
+	 strcpy(IPrem, inet_ntoa(adrrem.sin_addr));
+	 *portTCPrem = ntohs(adrrem.sin_port);
 	 return scon;
 }
 
@@ -181,13 +182,13 @@ int TCP_Envia(int Sck, const char *SeqBytes, int LongSeqBytes)
 int TCP_Rep(int Sck, char *SeqBytes, int LongSeqBytes)
 {
 	int bytes_llegits;
-	if(bytes_llegits=read(Sck,SeqBytes,LongSeqBytes)==-1) 
+	if((bytes_llegits=read(Sck,SeqBytes,LongSeqBytes))==-1) 
 	 { 
 		  perror("Error en read"); 
 		  close(Sck); 
 		  exit(-1); 
 	 } 
-	 return 0;
+	 return bytes_llegits;
 }
 
 /* S’allibera (s’esborra) el socket TCP d’identificador “Sck”; si “Sck”   */

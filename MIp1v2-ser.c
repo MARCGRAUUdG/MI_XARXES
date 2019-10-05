@@ -11,11 +11,11 @@ int main(int argc,char *argv[])
 { 
  int s2=0;
  int port = 2000;
+ char miss[200];
                                                 
- s2 = TCP_CreaSockServidor("23.3.1.5",3678);
- TCP_AcceptaConnexio(s2,"88.8.12.3",&port);
- TCP_Rep(s2,"Com va això?",sizeof("Com va això?"));
- TCP_Rep(s2,"Estàs bé?",sizeof("Estàs bé?"));
+ s2 = TCP_CreaSockServidor("127.0.0.1",3678);
+ TCP_AcceptaConnexio(s2,"127.0.0.1",&port);
+ TCP_Rep(s2,miss,sizeof(miss));
  TCP_TancaSock(s2);
  
  return(0); 
