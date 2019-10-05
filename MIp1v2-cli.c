@@ -10,10 +10,18 @@
 int main(int argc,char *argv[]) 
 { 
  int s1=0;
+ char IPRemot[20];
+ int portRemot;
+ 
+ printf("Introdueix una IP: ");
+ scanf("%s", IPRemot);
+ 
+ printf("Introdueix un port (3678): ");
+ scanf("%i", &portRemot);
  
  s1 = TCP_CreaSockClient("127.0.0.1",2000);
- TCP_DemanaConnexio(s1,"127.0.0.1",3678);
- TCP_Envia(s1,"Com va això?", sizeof("Com va això?"));
+ TCP_DemanaConnexio(s1,IPRemot,portRemot);
+ TCP_Envia(s1,"Com va aixo?", sizeof("Com va això?"));
  TCP_TancaSock(s1);
  
  return(0); 

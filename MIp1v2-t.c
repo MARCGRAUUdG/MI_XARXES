@@ -148,8 +148,6 @@ int TCP_AcceptaConnexio(int Sck, char *IPrem, int *portTCPrem)
 	  close(Sck); 
 	  exit(-1); 
 	 } 
-	 strcpy(IPrem, inet_ntoa(adrrem.sin_addr));
-	 *portTCPrem = ntohs(adrrem.sin_port);
 	 return scon;
 }
 
