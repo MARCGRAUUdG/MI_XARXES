@@ -6,7 +6,10 @@
 /* Autors: X, Y                                                           */
 /*                                                                        */
 /**************************************************************************/
-
+#include <stdlib.h>
+#include <stdio.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 /* Declaració de funcions EXTERNES de t.c, és a dir, d'aquelles que es    */
 /* faran servir en un altre fitxer extern, p.e., MIp1-mi.c; el fitxer     */
 /* extern farà un #include del fitxer .h a l'inici, i així les funcions   */
