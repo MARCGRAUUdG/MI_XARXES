@@ -205,7 +205,14 @@ int TCP_TancaSock(int Sck)
 /* Retorna -1 si hi ha error; un valor positiu qualsevol si tot va bé.    */
 int TCP_TrobaAdrSockLoc(int Sck, char *IPloc, int *portTCPloc)
 {
+	 struct sockaddr_in adrl;
+	 int long_adrl;
 	
+	long_adrl = sizeof(adrl);  
+	 if (getsockname(Sck, (struct sockaddr *)&adrl, &long_adrl) == -1)  
+	 {    perror("Error en getsockname");   close(Sck);   exit(-1);  }
+	*IPloc = inet_ntoa(adrl.sin_addr);
+	*portTCPloc = ntohs(adrl.sin_port);
 }
 
 /* Donat el socket TCP “connectat” d’identificador “Sck”, troba l’adreça  */
@@ -216,7 +223,14 @@ int TCP_TrobaAdrSockLoc(int Sck, char *IPloc, int *portTCPloc)
 /* Retorna -1 si hi ha error; un valor positiu qualsevol si tot va bé.    */
 int TCP_TrobaAdrSockRem(int Sck, char *IPrem, int *portTCPrem)
 {
+	struct sockaddr_in adrr;
+	int long_adrr;
 	
+	long_adrr = sizeof(adrr);
+	 if (getpeername(Sck, (struct sockaddr *)&adrr, &long_adrr) == -1)  
+	 {    perror("Error en getpeername");   close(Sck);   exit(-1);  }
+	*IPrem = inet_ntoa(adrr.sin_addr);
+	*portTCPrem = ntohs(adrr.sin_port);
 }
 
 /* Examina simultàniament i sense límit de temps (una espera indefinida)  */
@@ -228,6 +242,31 @@ int TCP_TrobaAdrSockRem(int Sck, char *IPrem, int *portTCPrem)
 /* sockets, retorna l’identificador d’aquest socket.                      */
 int T_HaArribatAlgunaCosa(const int *LlistaSck, int LongLlistaSck)
 {
+	FD_ZERO(&conjunt);
+	FD_SET(0,&conjunt);
+	FD_SET(scon,&conjunt);
+	descmax = 0; 
+	
+	for (int i = 0; i < LongLlistaSck; i++)
+	{
+		if (LlistaSck[i] >= descmax) 
+		{
+			descmax = LlistaSck[i];
+		}
+	}
+	
+	if(select(descmax+1, &conjunt, NULL, NULL, NULL) == -1)  
+	{   perror("Error en select");   exit(-1);   } 
+	 
+	for (int i = 0; i < LongLlistaSck; i++)
+	{
+		if (FD_ISSET(LlistaSck[i], &conjunt))
+		{
+			return LlistaSck[i]
+		}
+	}
+	
+	return -1
 	
 }
 
