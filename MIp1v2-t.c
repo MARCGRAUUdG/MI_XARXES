@@ -242,29 +242,20 @@ int TCP_TrobaAdrSockRem(int Sck, char *IPrem, int *portTCPrem)
 /* sockets, retorna l’identificador d’aquest socket.                      */
 int T_HaArribatAlgunaCosa(const int *LlistaSck, int LongLlistaSck)
 {
+	scon = LlistaSck[0];
 	FD_ZERO(&conjunt);
 	FD_SET(0,&conjunt);
 	FD_SET(scon,&conjunt);
-	descmax = 0; 
-	
-	for (int i = 0; i < LongLlistaSck; i++)
-	{
-		if (LlistaSck[i] >= descmax) 
-		{
-			descmax = LlistaSck[i];
-		}
-	}
+	int descmax = scon;
 	
 	if(select(descmax+1, &conjunt, NULL, NULL, NULL) == -1)  
 	{   perror("Error en select");   exit(-1);   } 
 	 
-	for (int i = 0; i < LongLlistaSck; i++)
-	{
-		if (FD_ISSET(LlistaSck[i], &conjunt))
-		{
-			return LlistaSck[i]
-		}
-	}
+	if(FD_ISSET (0,&conjunt))
+	{   return 0;} 
+	
+	if(FD_ISSET (scon,&conjunt)) 
+	{	return scon} 
 	
 	return -1
 	

@@ -25,11 +25,6 @@ int main(int argc,char *argv[])
  
  s2 = TCP_CreaSockServidor("127.0.0.1",3678);
  aux_s2 = TCP_AcceptaConnexio(s2,IPRemot,&portRemot);
- int llistaSck = [0,aux_s2];
- if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)))
- {
-	 
- }
  
  char *IPloc, int *portTCPloc;
  TCP_TrobaAdrSockLoc(aux_s2, IPloc, portTCPloc);
@@ -41,8 +36,19 @@ int main(int argc,char *argv[])
                                              
  while (miss[0]!='#')
  {
-	 TCP_Rep(aux_s2,miss,sizeof(miss));
-	 printf("%s\n", miss);
+	  int llistaSck[1] = aux_s2;
+	  if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) == 0)
+	  {
+		  TCP_Rep(0,miss,sizeof(miss));
+	  } else if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) >0)
+	  {
+		  TCP_Rep(aux_s2,miss,sizeof(miss));
+	  } else
+	  {
+		  perror("EEEEEEEEEEEEEEEEEERROOOOOOOOOOOOOOR!")
+	  }
+	 
+	  printf("%s\n", miss);
  }
  
  TCP_TancaSock(s2);
