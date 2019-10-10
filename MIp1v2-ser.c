@@ -15,7 +15,10 @@ int main(int argc,char *argv[])
  char miss[200];
  miss[0] = ' ';
  char IPRemot[20];
+ char nicLoc[200], nicRem[200];
 
+ printf("Escriu el nick: ");
+ int aux_nicLoc = read(0, nicLoc, sizeof(nicLoc))
  
  printf("Introdueix una IP: ");
  scanf("%s", IPRemot);
@@ -25,6 +28,9 @@ int main(int argc,char *argv[])
  
  s2 = TCP_CreaSockServidor("127.0.0.1",3678);
  aux_s2 = TCP_AcceptaConnexio(s2,IPRemot,&portRemot);
+ 
+ TCP_Envia(aux_s2, nicLoc, strlen(nicLoc));
+ TCP_Rep(aux_s2, NicRem, 200);
  
  char *IPloc; 
  int *portTCPloc;
