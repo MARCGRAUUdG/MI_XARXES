@@ -9,15 +9,10 @@
 #include "MIp1v2-t.h"
 int main(int argc,char *argv[]) 
 { 
- int s1=0;
+ int s1=0, aux_s1=0;
  char IPRemot[20];
  int portRemot;
- 
- struct sockaddr_in adrl;
- int long_adrl;
- struct sockaddr_in adrr;
- int long_adrr;
- char missatge_enviar[200];
+ char miss[200];
  
  printf("Introdueix una IP: ");
  scanf("%s", IPRemot);
@@ -26,22 +21,32 @@ int main(int argc,char *argv[])
  scanf("%i", &portRemot);
  
  s1 = TCP_CreaSockClient("127.0.0.1",2000);
- TCP_DemanaConnexio(s1,IPRemot,portRemot);
+ aux_s1 = TCP_DemanaConnexio(s1,IPRemot,portRemot);
  
-  long_adrl = sizeof(adrl);  
- if (getsockname(s1, (struct sockaddr *)&adrl, &long_adrl) == -1)  
- {    perror("Error en getsockname");   close(s1);   exit(-1);  }
- printf("Sock LOC: @IP %s,TCP, #port %d\n",inet_ntoa(adrl.sin_addr),ntohs(adrl.sin_port));
-
- long_adrr = sizeof(adrr);
- if (getpeername(s1, (struct sockaddr *)&adrr, &long_adrr) == -1)  
- {    perror("Error en getpeername");   close(s1);   exit(-1);  }
- printf("Sock REM: @IP %s,TCP, #port %d\n",inet_ntoa(adrr.sin_addr),ntohs(adrr.sin_port)); 
+ char *IPloc; 
+ int *portTCPloc;
+ TCP_TrobaAdrSockLoc(aux_s1, IPloc, portTCPloc);
+ printf("Sock LOC: @IP %s,TCP, #port %i\n",IPloc,*portTCPloc);
+ char *IPrem; 
+ int *portTCPrem;
+ TCP_TrobaAdrSockRem(aux_s1, IPrem, portTCPrem);
+ printf("Sock REM: @IP %s,TCP, #port %i\n",IPrem,*portTCPrem); 
  
- while (missatge_enviar[0]!='#')
+ while (miss[0]!='#')
  {
-	 scanf("%s", missatge_enviar);
-	 TCP_Envia(s1,missatge_enviar, sizeof(missatge_enviar));
+	  int llistaSck[1] = {aux_s1};
+	  if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) == 0)
+	  {
+		  TCP_Rep(0,miss,sizeof(miss));
+	  } if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) >0)
+	  {
+		  TCP_Rep(aux_s1,miss,sizeof(miss));
+	  } if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) ==-1)
+	  {
+		  perror("EEEEEEEEEEEEEEEEEERROOOOOOOOOOOOOOR!");
+	  }
+	  TCP_Envia(s1,miss, sizeof(miss));
+	  printf("%s\n", miss);
  }
  
  TCP_TancaSock(s1);

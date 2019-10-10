@@ -26,28 +26,30 @@ int main(int argc,char *argv[])
  s2 = TCP_CreaSockServidor("127.0.0.1",3678);
  aux_s2 = TCP_AcceptaConnexio(s2,IPRemot,&portRemot);
  
- char *IPloc, int *portTCPloc;
+ char *IPloc; 
+ int *portTCPloc;
  TCP_TrobaAdrSockLoc(aux_s2, IPloc, portTCPloc);
- printf("Sock LOC: @IP %s,TCP, #port %d\n",IPloc,portTCPloc);
- char *IPrem, int *portTCPrem;
+ printf("Sock LOC: @IP %s,TCP, #port %i\n",IPloc,*portTCPloc);
+ char *IPrem; 
+ int *portTCPrem;
  TCP_TrobaAdrSockRem(aux_s2, IPrem, portTCPrem);
- printf("Sock REM: @IP %s,TCP, #port %d\n",IPrem,portTCPrem); 
+ printf("Sock REM: @IP %s,TCP, #port %i\n",IPrem,*portTCPrem); 
 
                                              
  while (miss[0]!='#')
  {
-	  int llistaSck[1] = aux_s2;
+	  int llistaSck[1] = {aux_s2};
 	  if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) == 0)
 	  {
 		  TCP_Rep(0,miss,sizeof(miss));
-	  } else if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) >0)
+	  } if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) >0)
 	  {
 		  TCP_Rep(aux_s2,miss,sizeof(miss));
-	  } else
+	  } if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) ==-1)
 	  {
-		  perror("EEEEEEEEEEEEEEEEEERROOOOOOOOOOOOOOR!")
+		  perror("EEEEEEEEEEEEEEEEEERROOOOOOOOOOOOOOR!");
 	  }
-	 
+	  TCP_Envia(s2,miss, sizeof(miss));
 	  printf("%s\n", miss);
  }
  

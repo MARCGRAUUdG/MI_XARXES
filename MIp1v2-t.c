@@ -211,7 +211,7 @@ int TCP_TrobaAdrSockLoc(int Sck, char *IPloc, int *portTCPloc)
 	long_adrl = sizeof(adrl);  
 	 if (getsockname(Sck, (struct sockaddr *)&adrl, &long_adrl) == -1)  
 	 {    perror("Error en getsockname");   close(Sck);   exit(-1);  }
-	*IPloc = inet_ntoa(adrl.sin_addr);
+	IPloc = inet_ntoa(adrl.sin_addr);
 	*portTCPloc = ntohs(adrl.sin_port);
 }
 
@@ -229,7 +229,7 @@ int TCP_TrobaAdrSockRem(int Sck, char *IPrem, int *portTCPrem)
 	long_adrr = sizeof(adrr);
 	 if (getpeername(Sck, (struct sockaddr *)&adrr, &long_adrr) == -1)  
 	 {    perror("Error en getpeername");   close(Sck);   exit(-1);  }
-	*IPrem = inet_ntoa(adrr.sin_addr);
+	IPrem = inet_ntoa(adrr.sin_addr);
 	*portTCPrem = ntohs(adrr.sin_port);
 }
 
@@ -242,7 +242,8 @@ int TCP_TrobaAdrSockRem(int Sck, char *IPrem, int *portTCPrem)
 /* sockets, retorna l’identificador d’aquest socket.                      */
 int T_HaArribatAlgunaCosa(const int *LlistaSck, int LongLlistaSck)
 {
-	scon = LlistaSck[0];
+	fd_set conjunt;
+	int scon = LlistaSck[0];
 	FD_ZERO(&conjunt);
 	FD_SET(0,&conjunt);
 	FD_SET(scon,&conjunt);
@@ -255,9 +256,9 @@ int T_HaArribatAlgunaCosa(const int *LlistaSck, int LongLlistaSck)
 	{   return 0;} 
 	
 	if(FD_ISSET (scon,&conjunt)) 
-	{	return scon} 
+	{	return scon;} 
 	
-	return -1
+	return -1;
 	
 }
 
