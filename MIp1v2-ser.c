@@ -18,7 +18,7 @@ int main(int argc,char *argv[])
  char nicLoc[200], nicRem[200];
 
  printf("Escriu el nick: ");
- int aux_nicLoc = read(0, nicLoc, sizeof(nicLoc))
+ int aux_nicLoc = read(0, nicLoc, sizeof(nicLoc));
  
  printf("Introdueix una IP: ");
  scanf("%s", IPRemot);
@@ -30,16 +30,16 @@ int main(int argc,char *argv[])
  aux_s2 = TCP_AcceptaConnexio(s2,IPRemot,&portRemot);
  
  TCP_Envia(aux_s2, nicLoc, strlen(nicLoc));
- TCP_Rep(aux_s2, NicRem, 200);
+ TCP_Rep(aux_s2, nicRem, 200);
  
- char *IPloc; 
- int *portTCPloc;
- TCP_TrobaAdrSockLoc(aux_s2, IPloc, portTCPloc);
- printf("Sock LOC: @IP %s,TCP, #port %i\n",IPloc,*portTCPloc);
- char *IPrem; 
- int *portTCPrem;
- TCP_TrobaAdrSockRem(aux_s2, IPrem, portTCPrem);
- printf("Sock REM: @IP %s,TCP, #port %i\n",IPrem,*portTCPrem); 
+ char IPloc[16]; 
+ int portTCPloc;
+ TCP_TrobaAdrSockLoc(aux_s2, IPloc, &portTCPloc);
+ printf("Sock LOC: @IP %s,TCP, #port %i\n",IPloc,portTCPloc);
+ char IPrem[16]; 
+ int portTCPrem;
+ TCP_TrobaAdrSockRem(aux_s2, IPrem, &portTCPrem);
+ printf("Sock REM: @IP %s,TCP, #port %i\n",IPrem,portTCPrem); 
 
                                              
  while (miss[0]!='#')

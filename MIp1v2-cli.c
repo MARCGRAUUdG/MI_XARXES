@@ -23,14 +23,14 @@ int main(int argc,char *argv[])
  s1 = TCP_CreaSockClient("127.0.0.1",2000);
  TCP_DemanaConnexio(s1,IPRemot,portRemot);
  
- char *IPloc; 
- int *portTCPloc;
+ char IPloc[16]; 
+ int portTCPloc;
  TCP_TrobaAdrSockLoc(s1, IPloc, portTCPloc);
- printf("Sock LOC: @IP %s,TCP, #port %i\n",IPloc,*portTCPloc);
- char *IPrem;
- int *portTCPrem;
+ printf("Sock LOC: @IP %s,TCP, #port %i\n",IPloc,portTCPloc);
+ char IPrem[16];
+ int portTCPrem;
  TCP_TrobaAdrSockRem(s1, IPrem, portTCPrem);
- printf("Sock REM: @IP %s,TCP, #port %i\n",IPrem,*portTCPrem); 
+ printf("Sock REM: @IP %s,TCP, #port %i\n",IPrem,portTCPrem); 
  
  while (miss[0]!='#')
  {
