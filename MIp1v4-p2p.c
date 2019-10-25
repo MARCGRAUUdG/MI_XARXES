@@ -43,7 +43,7 @@ int main(int argc,char *argv[])
 	int aux_nickLoc = read(0, nickLoc, sizeof(nickLoc));
 	 
 	if((sck = TCP_CreaSockServidor("127.0.0.1",3678)) == -1){
-	MostraError("Error");
+	T_MostraError();
 	return -1;
 	}
 
@@ -53,12 +53,12 @@ int main(int argc,char *argv[])
 	llistaSck[0] = 0;
 	llistaSck[1] = sck;
 
-	if(HaArribatAlgunaCosa(llistaSck, 2) == -1){
+	if(T_HaArribatAlgunaCosa(llistaSck, 2) == -1){
 	perror("Error, a l'arribar alguna cosa");
 	return -1;
 	}
 	else{
-		if (HaArribatAlgunaCosa(llistaSck, 2) == 0){
+		if (T_HaArribatAlgunaCosa(llistaSck, 2) == 0){
 			scanf("%s", IPRemot);
 			
 			printf("Introdueix el port al que et vols connectar: ");
@@ -88,19 +88,19 @@ int main(int argc,char *argv[])
 		else{
 			
 			int sckRem;
-			if((sckRem = TCP_AcceptaConnexio(sck, IPRemot, portRemot)) == -1){
-				MostraError("Error a l'acceptar la connexió");
+			if((sckRem = TCP_AcceptaConnexio(sck, IPRemot, &portRemot)) == -1){
+				perror("Error a l'acceptar la connexió");
 				return -1;
 			}
 
 
 			if(TCP_Rep(sckRem, nickRem, 200) == -1){
-				MostraError("Error al rebre el nick remot");
+				perror("Error al rebre el nick remot");
 				return -1;
 			}
 
 			if(TCP_Envia(sckRem, nickLoc, strlen(nickLoc)) == -1){
-				MostraError("Error a l'enviar el nick");
+				perror("Error a l'enviar el nick");
 				return -1;
 			}
 			llistaSck[1] = sckRem;
