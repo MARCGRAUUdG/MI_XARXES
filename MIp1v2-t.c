@@ -268,6 +268,7 @@ int T_HaArribatAlgunaCosa(const int *LlistaSck, int LongLlistaSck)
 /* imprimibles acabat en '\0')                                            */
 char* T_MostraError(void)
 {
+	//printf("%s", "EP hi ha un error");
  return strerror(errno);
 } 
 

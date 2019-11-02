@@ -42,10 +42,12 @@ int main(int argc,char *argv[])
 	printf("Escriu el teu nick:\n ");  //S'HA DE CODIFICAR EL NICK
 	int aux_nickLoc = read(0, nickLoc, sizeof(nickLoc));
 	 
-	if((sck = TCP_CreaSockServidor("127.0.0.1",3678)) == -1){
-	T_MostraError();
-	return -1;
+	if((sck = TCP_CreaSockServidor("127.0.0.1",0)) == -1){
+		T_MostraError();
+		return -1;
 	}
+	
+	//printf("%i", sck);
 
 	printf("Introdueix la IP a on et vols connectar: ");
 	 
@@ -60,15 +62,18 @@ int main(int argc,char *argv[])
 	else{
 		if (T_HaArribatAlgunaCosa(llistaSck, 2) == 0){
 			scanf("%s", IPRemot);
+			//printf("%s", IPRemot);
 			
 			printf("Introdueix el port al que et vols connectar: ");
 			scanf("%i", &portRemot);
 			
+			printf("%i", portRemot);
 			int sckLoc;
 			if ((sckLoc = TCP_CreaSockClient("0.0.0.0", 0)) == -1){
 				perror("Error al crear el scoket local");
 				return -1;
 			}
+			
 			if (TCP_DemanaConnexio(sckLoc, IPRemot, portRemot) == -1){
 				perror("Error, al connectar al socket remot");
 				return -1;
@@ -84,6 +89,7 @@ int main(int argc,char *argv[])
 				return -1;
 			}
 			llistaSck[1] = sck;	
+			printf("%s", "He demanat connexió");
 		}
 		else{
 			
@@ -92,7 +98,7 @@ int main(int argc,char *argv[])
 				perror("Error a l'acceptar la connexió");
 				return -1;
 			}
-
+	
 
 			if(TCP_Rep(sckRem, nickRem, 200) == -1){
 				perror("Error al rebre el nick remot");
@@ -104,6 +110,7 @@ int main(int argc,char *argv[])
 				return -1;
 			}
 			llistaSck[1] = sckRem;
+			printf("%s", "He acceptat connexió");
 		}
 		
 		printf("%s i %s s'han connectat correctament...", nickLoc, nickRem);
