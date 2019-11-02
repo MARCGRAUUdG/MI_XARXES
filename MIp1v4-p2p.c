@@ -32,7 +32,7 @@
 
 int main(int argc,char *argv[])
 {
-	int sck=0, aux_s=0;
+	int sesc=0, scon=0;
 	int portRemot;
 	char miss[200];
 	miss[0] = ' ';
@@ -42,7 +42,7 @@ int main(int argc,char *argv[])
 	printf("Escriu el teu nick:\n ");  //S'HA DE CODIFICAR EL NICK
 	int aux_nickLoc = read(0, nickLoc, sizeof(nickLoc));
 	 
-	if((sck = TCP_CreaSockServidor("127.0.0.1",0)) == -1){
+	if((sesc = TCP_CreaSockServidor("127.0.0.1",0)) == -1){
 		T_MostraError();
 		return -1;
 	}
@@ -53,89 +53,88 @@ int main(int argc,char *argv[])
 	 
 	int llistaSck[2];
 	llistaSck[0] = 0;
-	llistaSck[1] = sck;
+	llistaSck[1] = sesc;
 
-	if(T_HaArribatAlgunaCosa(llistaSck, 2) == -1){
-	perror("Error, a l'arribar alguna cosa");
-	return -1;
+	int ha_arribat = T_HaArribatAlgunaCosa(llistaSck, 2);
+
+	if(ha_arribat == -1){
+		perror("Error, a l'arribar alguna cosa");
+		return -1;
 	}
-	else{
-		if (T_HaArribatAlgunaCosa(llistaSck, 2) == 0){
-			scanf("%s", IPRemot);
-			//printf("%s", IPRemot);
-			
-			printf("Introdueix el port al que et vols connectar: ");
-			scanf("%i", &portRemot);
-			
-			printf("%i", portRemot);
-			int sckLoc;
-			if ((sckLoc = TCP_CreaSockClient("0.0.0.0", 0)) == -1){
-				perror("Error al crear el scoket local");
-				return -1;
-			}
-			
-			if (TCP_DemanaConnexio(sckLoc, IPRemot, portRemot) == -1){
-				perror("Error, al connectar al socket remot");
-				return -1;
-			}
-			
-			if (TCP_Envia(sckLoc, nickLoc, strlen(nickLoc)) == -1) {
-				perror ("Error a l'enviar el nick");
-				return -1;
-			}
-			
-			if (TCP_Rep(sckLoc, nickRem, 200) == -1) {
-				perror ("Error al rebre el nick remot");
-				return -1;
-			}
-			llistaSck[1] = sck;	
-			printf("%s", "He demanat connexió");
+	if (ha_arribat == 0) {
+		scanf("%s", IPRemot);
+		//printf("%s", IPRemot);
+		
+		printf("Introdueix el port al que et vols connectar: ");printf("puta");
+		scanf("%d", &portRemot);
+		printf("puta");
+		
+		if ((scon = TCP_CreaSockClient("0.0.0.0", 0)) == -1){
+			T_MostraError();
+			return -1;
 		}
-		else{
-			
-			int sckRem;
-			if((sckRem = TCP_AcceptaConnexio(sck, IPRemot, &portRemot)) == -1){
-				perror("Error a l'acceptar la connexió");
-				return -1;
-			}
+		
+		if (TCP_DemanaConnexio(scon, IPRemot, portRemot) == -1){
+			T_MostraError();
+			return -1;
+		}
+		
+		if (TCP_Envia(scon, nickLoc, strlen(nickLoc)) == -1) {
+			T_MostraError();
+			return -1;
+		}
+		
+		if (TCP_Rep(scon, nickRem, 200) == -1) {
+			T_MostraError();
+			return -1;
+		}
+		//llistaSck[1] = sck;	
+		printf("%s", "He demanat connexió");
+	}
+	else {
+		
+		if((scon = TCP_AcceptaConnexio(sesc, IPRemot, &portRemot)) == -1){
+			T_MostraError();
+			return -1;
+		}
+
+
+		if(TCP_Rep(scon, nickRem, 200) == -1){
+			T_MostraError();
+			return -1;
+		}
+
+		if(TCP_Envia(scon, nickLoc, strlen(nickLoc)) == -1){
+			T_MostraError();
+			return -1;
+		}
+		//llistaSck[1] = sckRem;
+		printf("%s", "He acceptat connexió");
+	}
+		
+	printf("%s i %s s'han connectat correctament...", nickLoc, nickRem);
+	printf("Començem a xatejar:");
 	
-
-			if(TCP_Rep(sckRem, nickRem, 200) == -1){
-				perror("Error al rebre el nick remot");
-				return -1;
-			}
-
-			if(TCP_Envia(sckRem, nickLoc, strlen(nickLoc)) == -1){
-				perror("Error a l'enviar el nick");
-				return -1;
-			}
-			llistaSck[1] = sckRem;
-			printf("%s", "He acceptat connexió");
+	
+	while (miss[0]!='#'){
+		if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) == 0)
+		{
+		  TCP_Rep(0,miss,sizeof(miss));
+		  TCP_Envia(llistaSck[1],miss, sizeof(miss));
+		} 
+		if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) >0)
+		{
+		  TCP_Rep(llistaSck[1],miss,sizeof(miss));
+		  printf("%s\n", miss);
+		} 
+		if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) ==-1)
+		{
+		  perror("Error, no s'ha rebut/enviat correctament el missatge");
 		}
-		
-		printf("%s i %s s'han connectat correctament...", nickLoc, nickRem);
-		printf("Començem a xatejar:");
-		
-		
-		while (miss[0]!='#'){
-			if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) == 0)
-			{
-			  TCP_Rep(0,miss,sizeof(miss));
-			  TCP_Envia(llistaSck[1],miss, sizeof(miss));
-			} 
-			if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) >0)
-			{
-			  TCP_Rep(llistaSck[1],miss,sizeof(miss));
-			  printf("%s\n", miss);
-			} 
-			if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) ==-1)
-			{
-			  perror("Error, no s'ha rebut/enviat correctament el missatge");
-			}
-		}	
-		
-		TCP_TancaSock(llistaSck[1]);
-	}
-	 
-		return(0); 
+	}	
+	
+	TCP_TancaSock(llistaSck[1]);
+	
+ 
+	return(0); 
  }

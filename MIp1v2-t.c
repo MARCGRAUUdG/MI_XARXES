@@ -46,13 +46,25 @@
 /* va bé.                                                                 */
 int TCP_CreaSockClient(const char *IPloc, int portTCPloc)
 {
-	int scon;
+	int scon, i;
+	struct sockaddr_in adrloc;
 	
 	if((scon=socket(AF_INET,SOCK_STREAM,0))==-1) 
 	{ 
 		perror("Error en socket"); 
 		exit(-1);
 	}
+	
+	adrloc.sin_family=AF_INET; 
+	 adrloc.sin_port=htons(portTCPloc); 
+	 adrloc.sin_addr.s_addr=inet_addr(IPloc);    /* o bé: ...s_addr = INADDR_ANY */ 
+	 for(i=0;i<8;i++){adrloc.sin_zero[i]='\0';} 
+	 if((bind(scon,(struct sockaddr*)&adrloc,sizeof(adrloc)))==-1) 
+	 { 
+	  perror("Error en bind"); 
+	  close(scon); 
+	  exit(-1); 
+	 } 
 	
 	return scon;
 }
