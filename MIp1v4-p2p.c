@@ -33,6 +33,7 @@
 int main(int argc,char *argv[])
 {
 	int sesc=0, scon=0;
+	int portServidor;
 	int portRemot;
 	char miss[200];
 	miss[0] = ' ';
@@ -41,16 +42,20 @@ int main(int argc,char *argv[])
 
 	printf("Escriu el teu nick:\n ");  //S'HA DE CODIFICAR EL NICK
 	int aux_nickLoc = read(0, nickLoc, sizeof(nickLoc));
+	
+	printf("Escriu el port del socket servidor:\n ");  //S'HA DE CODIFICAR EL NICK
+	scanf("%d", &portServidor);
+	
+	//AQUI ESPERA UN INTRO --> SOLUCIONAR!
 	 
-	if((sesc = TCP_CreaSockServidor("127.0.0.1",0)) == -1){
+	if((sesc = TCP_CreaSockServidor("127.0.0.1", portServidor)) == -1){
 		T_MostraError();
 		return -1;
 	}
-	
-	//printf("%i", sck);
-
+		
 	printf("Introdueix la IP a on et vols connectar: ");
-	 
+	
+	
 	int llistaSck[2];
 	llistaSck[0] = 0;
 	llistaSck[1] = sesc;
@@ -65,9 +70,8 @@ int main(int argc,char *argv[])
 		scanf("%s", IPRemot);
 		//printf("%s", IPRemot);
 		
-		printf("Introdueix el port al que et vols connectar: ");printf("puta");
+		printf("Introdueix el port al que et vols connectar: ");
 		scanf("%d", &portRemot);
-		printf("puta");
 		
 		if ((scon = TCP_CreaSockClient("0.0.0.0", 0)) == -1){
 			T_MostraError();
@@ -78,6 +82,8 @@ int main(int argc,char *argv[])
 			T_MostraError();
 			return -1;
 		}
+		
+		printf("%s", "He demanat connexió");
 		
 		if (TCP_Envia(scon, nickLoc, strlen(nickLoc)) == -1) {
 			T_MostraError();
