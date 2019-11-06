@@ -33,6 +33,7 @@
 int main(int argc,char *argv[])
 {
 	int sesc=0, scon=0;
+	int ipServidor;
 	int portServidor;
 	int portRemot;
 	char miss[200];
@@ -43,12 +44,15 @@ int main(int argc,char *argv[])
 	printf("Escriu el teu nick:\n ");  //S'HA DE CODIFICAR EL NICK
 	int aux_nickLoc = read(0, nickLoc, sizeof(nickLoc));
 	
+	printf("Escriu la ip del socket servidor:\n ");  //S'HA DE CODIFICAR EL NICK
+	scanf("%d", &ipServidor);
+	
 	printf("Escriu el port del socket servidor:\n ");  //S'HA DE CODIFICAR EL NICK
 	scanf("%d", &portServidor);
 	
 	//AQUI ESPERA UN INTRO --> SOLUCIONAR!
 	 
-	if((sesc = TCP_CreaSockServidor("127.0.0.1", portServidor)) == -1){
+	if((sesc = TCP_CreaSockServidor(ipServidor, portServidor)) == -1){
 		T_MostraError();
 		return -1;
 	}
