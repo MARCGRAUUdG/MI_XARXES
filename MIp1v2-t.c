@@ -255,7 +255,7 @@ int TCP_TrobaAdrSockRem(int Sck, char *IPrem, int *portTCPrem)
 int T_HaArribatAlgunaCosa(const int *LlistaSck, int LongLlistaSck)
 {
 	fd_set conjunt;
-	int scon = LlistaSck[0];
+	int scon = LlistaSck[1];
 	FD_ZERO(&conjunt);
 	FD_SET(0,&conjunt);
 	FD_SET(scon,&conjunt);

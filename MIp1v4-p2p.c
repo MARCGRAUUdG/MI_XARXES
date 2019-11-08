@@ -32,6 +32,7 @@
 
 int main(int argc,char *argv[])
 {
+	int res;
 	int sesc=0, scon=0;
 	int ipServidor;
 	int portServidor;
@@ -44,21 +45,20 @@ int main(int argc,char *argv[])
 	printf("Escriu el teu nick:\n ");  //S'HA DE CODIFICAR EL NICK
 	int aux_nickLoc = read(0, nickLoc, sizeof(nickLoc));
 	
-	printf("Escriu la ip del socket servidor:\n ");  //S'HA DE CODIFICAR EL NICK
-	scanf("%d", &ipServidor);
 	
 	printf("Escriu el port del socket servidor:\n ");  //S'HA DE CODIFICAR EL NICK
 	scanf("%d", &portServidor);
 	
 	//AQUI ESPERA UN INTRO --> SOLUCIONAR!
 	 
-	if((sesc = TCP_CreaSockServidor(ipServidor, portServidor)) == -1){
+	if((sesc = TCP_CreaSockServidor("127.0.0.1", portServidor)) == -1){
 		T_MostraError();
 		return -1;
 	}
 		
-	printf("Introdueix la IP a on et vols connectar: ");
+	printf("Introdueix la IP a on et vols connectar:\n ");
 	
+	//scanf("%d", &res);
 	
 	int llistaSck[2];
 	llistaSck[0] = 0;
@@ -70,11 +70,11 @@ int main(int argc,char *argv[])
 		perror("Error, a l'arribar alguna cosa");
 		return -1;
 	}
-	if (ha_arribat == 0) {
+	if (ha_arribat == 0) {printf("%s", "he emtrat 0\n");
 		scanf("%s", IPRemot);
-		//printf("%s", IPRemot);
-		
-		printf("Introdueix el port al que et vols connectar: ");
+		printf("%s", IPRemot);
+				
+		printf("Introdueix el port al que et vols connectar:\n");
 		scanf("%d", &portRemot);
 		
 		if ((scon = TCP_CreaSockClient("0.0.0.0", 0)) == -1){
@@ -82,12 +82,17 @@ int main(int argc,char *argv[])
 			return -1;
 		}
 		
+		printf("%s", "He creat el socket client\n");
+		
+		
+		printf("%d", portRemot);
+		
 		if (TCP_DemanaConnexio(scon, IPRemot, portRemot) == -1){
 			T_MostraError();
 			return -1;
 		}
 		
-		printf("%s", "He demanat connexió");
+		printf("%s", "He demanat connexió\n");
 		
 		if (TCP_Envia(scon, nickLoc, strlen(nickLoc)) == -1) {
 			T_MostraError();
@@ -99,9 +104,9 @@ int main(int argc,char *argv[])
 			return -1;
 		}
 		//llistaSck[1] = sck;	
-		printf("%s", "He demanat connexió");
+		printf("%s", "He demanat connexió\n");
 	}
-	else {
+	else {printf("%s", "he emtrat 1\n");
 		
 		if((scon = TCP_AcceptaConnexio(sesc, IPRemot, &portRemot)) == -1){
 			T_MostraError();
@@ -118,12 +123,11 @@ int main(int argc,char *argv[])
 			T_MostraError();
 			return -1;
 		}
-		//llistaSck[1] = sckRem;
-		printf("%s", "He acceptat connexió");
+		printf("%s", "He acceptat connexió\n");
 	}
 		
-	printf("%s i %s s'han connectat correctament...", nickLoc, nickRem);
-	printf("Començem a xatejar:");
+	printf("%s i %s s'han connectat correctament...\n", nickLoc, nickRem);
+	printf("Començem a xatejar:\n");
 	
 	
 	while (miss[0]!='#'){
