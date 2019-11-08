@@ -32,7 +32,7 @@
 
 int main(int argc,char *argv[])
 {
-	int res;
+	int midaMiss;
 	int sesc=0, scon=0;
 	int ipServidor;
 	int portServidor;
@@ -129,22 +129,39 @@ int main(int argc,char *argv[])
 	printf("%s i %s s'han connectat correctament...\n", nickLoc, nickRem);
 	printf("Començem a xatejar:\n");
 	
-	
 	while (miss[0]!='#'){
-		if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) == 0)
+		printf("Llista 1 %d, llista 2 %d\n", llistaSck[0], llistaSck[1]);
+		ha_arribat = T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck));
+		printf("Ha arribat: %d\n", ha_arribat);
+		if (ha_arribat == 0) //Envia missatge
 		{
-		  TCP_Rep(0,miss,sizeof(miss));
-		  TCP_Envia(llistaSck[1],miss, sizeof(miss));
-		} 
-		if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) >0)
+		  midaMiss = read(0, miss, sizeof(miss));
+		  
+		  if (miss[0] == '#')
+		  {
+			  printf("T'has desconnectat");
+		  } else
+		  {
+			  printf("%s\n", nickLoc);
+			  if (TCP_Envia(scon, miss, strlen(miss)) == -1)
+			  {
+				  perror("Error");
+				  exit(-1);
+			  }
+		  }
+		} else //rep missatge
 		{
-		  TCP_Rep(llistaSck[1],miss,sizeof(miss));
-		  printf("%s\n", miss);
-		} 
-		if (T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck)) ==-1)
-		{
-		  perror("Error, no s'ha rebut/enviat correctament el missatge");
+			printf("puta\n");
+			midaMiss = TCP_Rep(scon, miss, sizeof(miss));
+			printf("Mida del missatge: %d\n", midaMiss);
+			if (midaMiss == -1) {exit(-1);}
+			else
+			{
+				printf("%s\n", nickRem);
+				printf("Missatge: %s\n", miss);
+			}
 		}
+		
 	}	
 	
 	TCP_TancaSock(llistaSck[1]);
