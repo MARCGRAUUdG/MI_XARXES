@@ -198,6 +198,7 @@ int TCP_Rep(int Sck, char *SeqBytes, int LongSeqBytes)
 		  close(Sck); 
 		  exit(-1); 
 	 } 
+	 SeqBytes[bytes_llegits] = '\0'; //??
 	 return bytes_llegits;
 }
 

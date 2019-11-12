@@ -48,8 +48,6 @@ int main(int argc,char *argv[])
 	
 	printf("Escriu el port del socket servidor:\n ");  //S'HA DE CODIFICAR EL NICK
 	scanf("%d", &portServidor);
-	
-	//AQUI ESPERA UN INTRO --> SOLUCIONAR!
 	 
 	if((sesc = TCP_CreaSockServidor("127.0.0.1", portServidor)) == -1){
 		T_MostraError();
@@ -57,8 +55,6 @@ int main(int argc,char *argv[])
 	}
 		
 	printf("Introdueix la IP a on et vols connectar:\n ");
-	
-	//scanf("%d", &res);
 	
 	int llistaSck[2];
 	llistaSck[0] = 0;
@@ -72,7 +68,6 @@ int main(int argc,char *argv[])
 	}
 	if (ha_arribat == 0) {printf("%s", "he emtrat 0\n");
 		scanf("%s", IPRemot);
-		printf("%s", IPRemot);
 				
 		printf("Introdueix el port al que et vols connectar:\n");
 		scanf("%d", &portRemot);
@@ -82,17 +77,11 @@ int main(int argc,char *argv[])
 			return -1;
 		}
 		
-		printf("%s", "He creat el socket client\n");
-		
-		
-		printf("%d", portRemot);
 		
 		if (TCP_DemanaConnexio(scon, IPRemot, portRemot) == -1){
 			T_MostraError();
 			return -1;
 		}
-		
-		printf("%s", "He demanat connexió\n");
 		
 		if (TCP_Envia(scon, nickLoc, strlen(nickLoc)) == -1) {
 			T_MostraError();
@@ -102,11 +91,9 @@ int main(int argc,char *argv[])
 		if (TCP_Rep(scon, nickRem, 200) == -1) {
 			T_MostraError();
 			return -1;
-		}
-		//llistaSck[1] = sck;	
-		printf("%s", "He demanat connexió\n");
+		}	
 	}
-	else {printf("%s", "he emtrat 1\n");
+	else {
 		
 		if((scon = TCP_AcceptaConnexio(sesc, IPRemot, &portRemot)) == -1){
 			T_MostraError();
@@ -123,26 +110,25 @@ int main(int argc,char *argv[])
 			T_MostraError();
 			return -1;
 		}
-		printf("%s", "He acceptat connexió\n");
 	}
 		
 	printf("%s i %s s'han connectat correctament...\n", nickLoc, nickRem);
 	printf("Començem a xatejar:\n");
 	
 	while (miss[0]!='#'){
-		printf("Llista 1 %d, llista 2 %d\n", llistaSck[0], llistaSck[1]);
 		ha_arribat = T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck));
-		printf("Ha arribat: %d\n", ha_arribat);
 		if (ha_arribat == 0) //Envia missatge
 		{
+			//printf("Estic donant\n");
 		  midaMiss = read(0, miss, sizeof(miss));
+		  miss[midaMiss-1] = '\0';
 		  
 		  if (miss[0] == '#')
 		  {
 			  printf("T'has desconnectat");
 		  } else
 		  {
-			  printf("%s\n", nickLoc);
+			  //printf("%s\n", nickLoc);
 			  if (TCP_Envia(scon, miss, strlen(miss)) == -1)
 			  {
 				  perror("Error");
@@ -151,13 +137,13 @@ int main(int argc,char *argv[])
 		  }
 		} else //rep missatge
 		{
-			printf("puta\n");
+			//printf("Estic rebent\n");
 			midaMiss = TCP_Rep(scon, miss, sizeof(miss));
-			printf("Mida del missatge: %d\n", midaMiss);
+			//printf("Mida del missatge: %d\n", midaMiss);
 			if (midaMiss == -1) {exit(-1);}
 			else
 			{
-				printf("%s\n", nickRem);
+				//printf("%s\n", nickRem);
 				printf("Missatge: %s\n", miss);
 			}
 		}
