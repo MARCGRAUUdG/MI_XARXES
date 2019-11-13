@@ -49,7 +49,7 @@ int main(int argc,char *argv[])
 	printf("Escriu el port del socket servidor:\n ");  //S'HA DE CODIFICAR EL NICK
 	scanf("%d", &portServidor);
 	 
-	if((sesc = TCP_CreaSockServidor("127.0.0.1", portServidor)) == -1){
+	if((sesc = TCP_CreaSockServidor("192.168.43.40", portServidor)) == -1){
 		T_MostraError();
 		return -1;
 	}
@@ -115,11 +115,16 @@ int main(int argc,char *argv[])
 	printf("%s i %s s'han connectat correctament...\n", nickLoc, nickRem);
 	printf("Començem a xatejar:\n");
 	
-	while (miss[0]!='#'){
-		ha_arribat = T_HaArribatAlgunaCosa(llistaSck, sizeof(llistaSck));
+	do{
+		int llistaSck[2];
+		llistaSck[0] = 0;
+		llistaSck[1] = scon;
+
+		ha_arribat = T_HaArribatAlgunaCosa(llistaSck, 2);
+		printf("socket on ha arribat algo: %d", ha_arribat);
 		if (ha_arribat == 0) //Envia missatge
 		{
-			//printf("Estic donant\n");
+		  printf("Estic donant\n");
 		  midaMiss = read(0, miss, sizeof(miss));
 		  miss[midaMiss-1] = '\0';
 		  
@@ -137,10 +142,11 @@ int main(int argc,char *argv[])
 		  }
 		} else //rep missatge
 		{
-			//printf("Estic rebent\n");
+			printf("Estic rebent\n");
 			midaMiss = TCP_Rep(scon, miss, sizeof(miss));
-			//printf("Mida del missatge: %d\n", midaMiss);
+			printf("Mida del missatge: %d\n", midaMiss);
 			if (midaMiss == -1) {exit(-1);}
+			else if (midaMiss == 0) printf("L'usuari s'ha desconectat");
 			else
 			{
 				//printf("%s\n", nickRem);
@@ -148,7 +154,7 @@ int main(int argc,char *argv[])
 			}
 		}
 		
-	}	
+	} while (midaMiss!=0 && miss[0]!='#');	
 	
 	TCP_TancaSock(llistaSck[1]);
 	
