@@ -24,6 +24,7 @@
 #include <netinet/in.h> 
 #include <arpa/inet.h> 
 #include <unistd.h> 
+#include "MIp1v2-t.h"
 
 /* Definició de constants, p.e., #define XYZ       1500                   */
 
@@ -255,24 +256,6 @@ int TCP_TrobaAdrSockRem(int Sck, char *IPrem, int *portTCPrem)
 /* sockets, retorna l’identificador d’aquest socket.                      */
 int T_HaArribatAlgunaCosa(const int *LlistaSck, int LongLlistaSck)
 {
-	/*fd_set conjunt;
-	int scon = LlistaSck[1];
-	FD_ZERO(&conjunt);
-	FD_SET(0,&conjunt);
-	FD_SET(scon,&conjunt);
-	int descmax = scon;
-	
-	if(select(descmax+1, &conjunt, NULL, NULL, NULL) == -1)  
-	{   perror("Error en select");   exit(-1);   } 
-	 
-	if(FD_ISSET (0,&conjunt))
-	{   return 0;} 
-	
-	if(FD_ISSET (scon,&conjunt)) 
-	{	return scon;} 
-	
-	return -1;*/
-	
 	fd_set conjunt;
 	int descmax = 0, i;
 

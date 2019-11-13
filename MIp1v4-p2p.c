@@ -21,6 +21,7 @@
 #include <arpa/inet.h> 
 #include <unistd.h> 
 #include "MIp1v2-t.h"
+#include "MIp1v4-mi.h"
 
 /* Definició de constants, p.e., #define XYZ       1500                   */
 
@@ -37,94 +38,52 @@ int main(int argc,char *argv[])
 	int ipServidor;
 	int portServidor;
 	int portRemot;
+	int portLocal;
 	char miss[200];
 	miss[0] = ' ';
 	char IPRemot[20];
+	char IPLocal[20];
 	char nickLoc[200], nickRem[200];
 
 	printf("Escriu el teu nick:\n ");  //S'HA DE CODIFICAR EL NICK
 	int aux_nickLoc = read(0, nickLoc, sizeof(nickLoc));
-	
+	nickLoc[aux_nickLoc-1] = '\0';
 	
 	printf("Escriu el port del socket servidor:\n ");  //S'HA DE CODIFICAR EL NICK
 	scanf("%d", &portServidor);
 	 
-	if((sesc = TCP_CreaSockServidor("192.168.43.40", portServidor)) == -1){
-		T_MostraError();
-		return -1;
-	}
+	sesc = MI_IniciaEscPetiRemConv(portServidor);
 		
 	printf("Introdueix la IP a on et vols connectar:\n ");
 	
-	int llistaSck[2];
-	llistaSck[0] = 0;
-	llistaSck[1] = sesc;
-
-	int ha_arribat = T_HaArribatAlgunaCosa(llistaSck, 2);
-
-	if(ha_arribat == -1){
+	int ha_arribat = MI_HaArribatPetiConv(sesc);
+	
+	if(ha_arribat == -1)
+	{
 		perror("Error, a l'arribar alguna cosa");
 		return -1;
 	}
-	if (ha_arribat == 0) {printf("%s", "he emtrat 0\n");
+	else if (ha_arribat == 0) 
+	{
 		scanf("%s", IPRemot);
 				
 		printf("Introdueix el port al que et vols connectar:\n");
 		scanf("%d", &portRemot);
+		printf("arribo");
+		scon = MI_DemanaConv(IPRemot, portRemot, IPLocal, &portLocal, nickLoc, nickRem);
 		
-		if ((scon = TCP_CreaSockClient("0.0.0.0", 0)) == -1){
-			T_MostraError();
-			return -1;
-		}
-		
-		
-		if (TCP_DemanaConnexio(scon, IPRemot, portRemot) == -1){
-			T_MostraError();
-			return -1;
-		}
-		
-		if (TCP_Envia(scon, nickLoc, strlen(nickLoc)) == -1) {
-			T_MostraError();
-			return -1;
-		}
-		
-		if (TCP_Rep(scon, nickRem, 200) == -1) {
-			T_MostraError();
-			return -1;
-		}	
 	}
 	else {
-		
-		if((scon = TCP_AcceptaConnexio(sesc, IPRemot, &portRemot)) == -1){
-			T_MostraError();
-			return -1;
-		}
-
-
-		if(TCP_Rep(scon, nickRem, 200) == -1){
-			T_MostraError();
-			return -1;
-		}
-
-		if(TCP_Envia(scon, nickLoc, strlen(nickLoc)) == -1){
-			T_MostraError();
-			return -1;
-		}
+		scon = MI_AcceptaConv(sesc, IPRemot, &portRemot, IPLocal, &portLocal, nickLoc, nickRem);
 	}
 		
 	printf("%s i %s s'han connectat correctament...\n", nickLoc, nickRem);
 	printf("Començem a xatejar:\n");
 	
 	do{
-		int llistaSck[2];
-		llistaSck[0] = 0;
-		llistaSck[1] = scon;
-
-		ha_arribat = T_HaArribatAlgunaCosa(llistaSck, 2);
-		printf("socket on ha arribat algo: %d", ha_arribat);
+		ha_arribat = MI_HaArribatLinia(scon);
 		if (ha_arribat == 0) //Envia missatge
 		{
-		  printf("Estic donant\n");
 		  midaMiss = read(0, miss, sizeof(miss));
 		  miss[midaMiss-1] = '\0';
 		  
@@ -133,30 +92,25 @@ int main(int argc,char *argv[])
 			  printf("T'has desconnectat");
 		  } else
 		  {
-			  //printf("%s\n", nickLoc);
-			  if (TCP_Envia(scon, miss, strlen(miss)) == -1)
-			  {
-				  perror("Error");
-				  exit(-1);
-			  }
+			  printf("%s\n", nickLoc);
+			  midaMiss = MI_EnviaLinia(scon, miss);
 		  }
 		} else //rep missatge
 		{
-			printf("Estic rebent\n");
-			midaMiss = TCP_Rep(scon, miss, sizeof(miss));
-			printf("Mida del missatge: %d\n", midaMiss);
+			midaMiss = MI_RepLinia(scon, miss);
+			//printf("Mida del missatge: %d\n", midaMiss);
 			if (midaMiss == -1) {exit(-1);}
 			else if (midaMiss == 0) printf("L'usuari s'ha desconectat");
 			else
 			{
-				//printf("%s\n", nickRem);
+				printf("%s\n", nickRem);
 				printf("Missatge: %s\n", miss);
 			}
 		}
 		
 	} while (midaMiss!=0 && miss[0]!='#');	
 	
-	TCP_TancaSock(llistaSck[1]);
+	MI_AcabaConv(scon);
 	
  
 	return(0); 
