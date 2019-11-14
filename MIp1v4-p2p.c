@@ -54,12 +54,12 @@ int main(int argc,char *argv[])
 	
 	
 	
-	printf("Escriu el port del socket servidor:\n ");  //S'HA DE CODIFICAR EL NICK
+	printf("Escriu el port del socket servidor:\n ");  //MILLORA: ENTREM 0 I HO AGAFA ALEOATORIAMENT
 	scanf("%d", &portServidor);
 	 
 	sesc = MI_IniciaEscPetiRemConv(portServidor);
 	
-	printf("Sesc: %d", sesc);
+	//printf("Sesc: %d", sesc);
 		
 	printf("Introdueix la IP a on et vols connectar:\n ");
 	
@@ -76,7 +76,7 @@ int main(int argc,char *argv[])
 				
 		printf("Introdueix el port al que et vols connectar:\n");
 		scanf("%d", &portRemot);
-		printf("arribo");
+		//printf("arribo");
 		scon = MI_DemanaConv(IPRemot, portRemot, IPLocal, &portLocal, nickLocCod, nickRemCod);
 		
 	}
@@ -103,14 +103,14 @@ int main(int argc,char *argv[])
 		if (ha_arribat == 0) //Envia missatge
 		{
 		  midaMiss = read(0, miss, sizeof(miss));
-		  //miss[midaMiss-1] = '\0';
+		  miss[midaMiss-1] = '\0';
 		  
 		  if (miss[0] == '#')
 		  {
 			  printf("T'has desconnectat");
 		  } else
 		  {
-			  printf("%s\n", nickLoc);
+			  //printf("%s\n", nickLoc);
 			  
 			  /*Codifiquem el missatge*/
 			  sprintf(missCod, "%c%03d%s", 'L', sizeof(miss), miss);
@@ -126,7 +126,7 @@ int main(int argc,char *argv[])
 			/*else if (midaMiss == 0) printf("L'usuari s'ha desconectat");*/
 			else
 			{
-				printf("%s\n", nickRem);
+				//printf("%s\n", nickRem);
 				
 				/*Descodifiquem el missatge*/
 				int midaMiss = 100*(missCod[1]-'0') + 10*(missCod[2]-'0') + (missCod[3]-'0');
@@ -139,7 +139,7 @@ int main(int argc,char *argv[])
 
 				miss[byte] = '\0';
 				
-				printf("Missatge: %s\n", miss);
+				printf("%s: %s\n",nickRem,miss);
 			}
 		}
 		

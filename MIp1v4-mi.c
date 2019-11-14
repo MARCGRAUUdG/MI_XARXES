@@ -45,7 +45,7 @@
 int MI_IniciaEscPetiRemConv(int portTCPloc)
 {
 	int socket;
-	if((socket = TCP_CreaSockServidor("127.168.43.40", portTCPloc)) == -1)
+	if((socket = TCP_CreaSockServidor("192.168.43.40", portTCPloc)) == -1)
 	{
 		T_MostraError();
 		exit(-1);
