@@ -107,7 +107,7 @@ int main(int argc,char *argv[])
 		  
 		  if (miss[0] == '#')
 		  {
-			  printf("T'has desconnectat");
+			  printf("T'has desconnectat\n");
 		  }
 		  //printf("%s\n", nickLoc);
 		  
@@ -137,7 +137,7 @@ int main(int argc,char *argv[])
 
 				miss[byte] = '\0';
 				
-				if (midaMiss!='#') printf("%s s'ha desconectat\n", nickRem);
+				if (miss[0] == '#') printf("%s s'ha desconectat\n", nickRem);
 				else
 				{
 					printf("%s: %s\n",nickRem,miss);
