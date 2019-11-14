@@ -45,7 +45,7 @@
 int MI_IniciaEscPetiRemConv(int portTCPloc)
 {
 	int socket;
-	if((socket = TCP_CreaSockServidor("127.0.0.1", portTCPloc)) == -1)
+	if((socket = TCP_CreaSockServidor("127.168.43.40", portTCPloc)) == -1)
 	{
 		T_MostraError();
 		exit(-1);
@@ -179,7 +179,7 @@ int MI_HaArribatLinia(int SckConvMI)
 int MI_EnviaLinia(int SckConvMI, const char *Linia)
 {
 	int midaMiss;
-	if (midaMiss = TCP_Envia(SckConvMI, Linia, strlen(Linia)) == -1)
+	if ((midaMiss = TCP_Envia(SckConvMI, Linia, strlen(Linia))) == -1)
 	{
 	   perror("Error");
 	   exit(-1);
@@ -200,7 +200,7 @@ int MI_EnviaLinia(int SckConvMI, const char *Linia)
 int MI_RepLinia(int SckConvMI, char *Linia)
 {
 	int midaMiss;
-	if (midaMiss = TCP_Rep(SckConvMI, Linia, 200) == -1)
+	if ((midaMiss = TCP_Rep(SckConvMI, Linia, 200)) == -1)
 	{
 		perror("Error");
 	    exit(-1);
