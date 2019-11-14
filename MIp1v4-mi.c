@@ -50,7 +50,7 @@ int MI_IniciaEscPetiRemConv(int portTCPloc)
 		T_MostraError();
 		exit(-1);
 	}
-	printf("sock: %d, port: %d", socket, portTCPloc);
+	
 	return socket;
 }
 

@@ -108,26 +108,24 @@ int main(int argc,char *argv[])
 		  if (miss[0] == '#')
 		  {
 			  printf("T'has desconnectat");
-		  } else
-		  {
-			  //printf("%s\n", nickLoc);
-			  
-			  /*Codifiquem el missatge*/
-			  sprintf(missCod, "%c%03d%s", 'L', sizeof(miss), miss);
-			  
-			  midaMiss = MI_EnviaLinia(scon, missCod);
 		  }
+		  //printf("%s\n", nickLoc);
+		  
+		  /*Codifiquem el missatge*/
+		  sprintf(missCod, "%c%03d%s", 'L', sizeof(miss), miss);
+		  
+		  midaMiss = MI_EnviaLinia(scon, missCod);
+	
 		} else //rep missatge
 		{
 			midaMiss = MI_RepLinia(scon, missCod);
+			
 						
 			//printf("Mida del missatge: %d\n", midaMiss);
 			if (midaMiss == -1) {exit(-1);}
 			/*else if (midaMiss == 0) printf("L'usuari s'ha desconectat");*/
 			else
 			{
-				//printf("%s\n", nickRem);
-				
 				/*Descodifiquem el missatge*/
 				int midaMiss = 100*(missCod[1]-'0') + 10*(missCod[2]-'0') + (missCod[3]-'0');
 
@@ -139,11 +137,15 @@ int main(int argc,char *argv[])
 
 				miss[byte] = '\0';
 				
-				printf("%s: %s\n",nickRem,miss);
+				if (midaMiss!='#') printf("%s s'ha desconectat\n", nickRem);
+				else
+				{
+					printf("%s: %s\n",nickRem,miss);
+				}
 			}
 		}
 		
-	} while (/*midaMiss!=0 &&*/ miss[0]!='#');	
+	} while (miss[0]!='#');	
 	
 	MI_AcabaConv(scon);
 	
