@@ -43,12 +43,14 @@
 /* Retorna -1 si hi ha error; l’identificador del socket d’escolta de MI  */
 /* creat si tot va bé.                                                    */
 int MI_IniciaEscPetiRemConv(int portTCPloc)
-{int socket;
-	if(socket = TCP_CreaSockServidor("127.0.0.1", portTCPloc) == -1)
+{
+	int socket;
+	if((socket = TCP_CreaSockServidor("127.0.0.1", portTCPloc)) == -1)
 	{
 		T_MostraError();
 		exit(-1);
 	}
+	printf("sock: %d, port: %d", socket, portTCPloc);
 	return socket;
 }
 
@@ -198,7 +200,7 @@ int MI_EnviaLinia(int SckConvMI, const char *Linia)
 int MI_RepLinia(int SckConvMI, char *Linia)
 {
 	int midaMiss;
-	if (midaMiss = TCP_Rep(SckConvMI, Linia, sizeof(Linia)) == -1)
+	if (midaMiss = TCP_Rep(SckConvMI, Linia, 200) == -1)
 	{
 		perror("Error");
 	    exit(-1);

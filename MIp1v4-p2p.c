@@ -53,6 +53,8 @@ int main(int argc,char *argv[])
 	scanf("%d", &portServidor);
 	 
 	sesc = MI_IniciaEscPetiRemConv(portServidor);
+	
+	printf("Sesc: %d", sesc);
 		
 	printf("Introdueix la IP a on et vols connectar:\n ");
 	
@@ -100,7 +102,7 @@ int main(int argc,char *argv[])
 			midaMiss = MI_RepLinia(scon, miss);
 			//printf("Mida del missatge: %d\n", midaMiss);
 			if (midaMiss == -1) {exit(-1);}
-			else if (midaMiss == 0) printf("L'usuari s'ha desconectat");
+			/*else if (midaMiss == 0) printf("L'usuari s'ha desconectat");*/
 			else
 			{
 				printf("%s\n", nickRem);
@@ -108,7 +110,7 @@ int main(int argc,char *argv[])
 			}
 		}
 		
-	} while (midaMiss!=0 && miss[0]!='#');	
+	} while (/*midaMiss!=0 &&*/ miss[0]!='#');	
 	
 	MI_AcabaConv(scon);
 	
