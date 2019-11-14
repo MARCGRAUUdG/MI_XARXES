@@ -39,15 +39,20 @@ int main(int argc,char *argv[])
 	int portServidor;
 	int portRemot;
 	int portLocal;
-	char miss[200];
+	char miss[200], missCod[200];
 	miss[0] = ' ';
 	char IPRemot[20];
 	char IPLocal[20];
-	char nickLoc[200], nickRem[200];
+	char nickLoc[200], nickRem[200], nickLocCod[200], nickRemCod[200]; 
 
 	printf("Escriu el teu nick:\n ");  //S'HA DE CODIFICAR EL NICK
 	int aux_nickLoc = read(0, nickLoc, sizeof(nickLoc));
 	nickLoc[aux_nickLoc-1] = '\0';
+	
+	/*Codifiquem el nick*/
+	sprintf(nickLocCod, "%c%03d%s", 'N', sizeof(nickLoc), nickLoc);
+	
+	
 	
 	printf("Escriu el port del socket servidor:\n ");  //S'HA DE CODIFICAR EL NICK
 	scanf("%d", &portServidor);
@@ -72,13 +77,24 @@ int main(int argc,char *argv[])
 		printf("Introdueix el port al que et vols connectar:\n");
 		scanf("%d", &portRemot);
 		printf("arribo");
-		scon = MI_DemanaConv(IPRemot, portRemot, IPLocal, &portLocal, nickLoc, nickRem);
+		scon = MI_DemanaConv(IPRemot, portRemot, IPLocal, &portLocal, nickLocCod, nickRemCod);
 		
 	}
 	else {
-		scon = MI_AcceptaConv(sesc, IPRemot, &portRemot, IPLocal, &portLocal, nickLoc, nickRem);
+		scon = MI_AcceptaConv(sesc, IPRemot, &portRemot, IPLocal, &portLocal, nickLocCod, nickRemCod);
 	}
-		
+	
+	/*Descodifiquem el nickRemCod*/
+	int midaNick = 100*(nickRemCod[1]-'0') + 10*(nickRemCod[2]-'0') + (nickRemCod[3]-'0');
+	
+	int byte;
+	for (byte=0; byte<midaNick; byte++)
+	{
+		nickRem[byte] = nickRemCod[4+byte];
+	}
+	
+	nickRem[byte] = '\0';
+	
 	printf("%s i %s s'han connectat correctament...\n", nickLoc, nickRem);
 	printf("Començem a xatejar:\n");
 	
@@ -87,7 +103,7 @@ int main(int argc,char *argv[])
 		if (ha_arribat == 0) //Envia missatge
 		{
 		  midaMiss = read(0, miss, sizeof(miss));
-		  miss[midaMiss-1] = '\0';
+		  //miss[midaMiss-1] = '\0';
 		  
 		  if (miss[0] == '#')
 		  {
@@ -95,17 +111,34 @@ int main(int argc,char *argv[])
 		  } else
 		  {
 			  printf("%s\n", nickLoc);
-			  midaMiss = MI_EnviaLinia(scon, miss);
+			  
+			  /*Codifiquem el missatge*/
+			  sprintf(missCod, "%c%03d%s", 'L', sizeof(miss), miss);
+			  
+			  midaMiss = MI_EnviaLinia(scon, missCod);
 		  }
 		} else //rep missatge
 		{
-			midaMiss = MI_RepLinia(scon, miss);
+			midaMiss = MI_RepLinia(scon, missCod);
+						
 			//printf("Mida del missatge: %d\n", midaMiss);
 			if (midaMiss == -1) {exit(-1);}
 			/*else if (midaMiss == 0) printf("L'usuari s'ha desconectat");*/
 			else
 			{
 				printf("%s\n", nickRem);
+				
+				/*Descodifiquem el missatge*/
+				int midaMiss = 100*(missCod[1]-'0') + 10*(missCod[2]-'0') + (missCod[3]-'0');
+
+				int byte;
+				for (byte=0; byte<midaMiss; byte++)
+				{
+					miss[byte] = missCod[4+byte];
+				}
+
+				miss[byte] = '\0';
+				
 				printf("Missatge: %s\n", miss);
 			}
 		}
