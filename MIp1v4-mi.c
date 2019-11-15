@@ -144,6 +144,8 @@ int MI_AcceptaConv(int SckEscMI, char *IPrem, int *portTCPrem, char *IPloc, int 
 		T_MostraError();
 		exit(-1);
 	}
+	
+	printf("EL PORT ES %p", portTCPrem);
 
 	if(TCP_TrobaAdrSockLoc(socket, IPloc, portTCPloc) == -1){
 		T_MostraError();

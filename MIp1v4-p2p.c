@@ -72,7 +72,7 @@ int main(int argc,char *argv[])
 	int aux_nickLoc = read(0, nickLoc, sizeof(nickLoc));
 	nickLoc[aux_nickLoc-1] = '\0';
 	
-	sprintf(nickLocCod, "%c%03d%s", 'N', sizeof(nickLoc), nickLoc); //Codifiquem el nick seguint el protocol establert
+	sprintf(nickLocCod, "%c%03d%s", 'N', strlen(nickLoc), nickLoc); //Codifiquem el nick seguint el protocol establert
 	
 	
 	obtenirIPGlobal(IPLocal); //Obtenim una IP que no sigui la de retorn
@@ -151,7 +151,7 @@ int main(int argc,char *argv[])
 			  printf("T'has desconnectat\n");
 		  }
 		  
-		  sprintf(missCod, "%c%03d%s", 'L', sizeof(miss), miss); //Codifiquem el missatge seguint el protocol establert
+		  sprintf(missCod, "%c%03d%s", 'L', strlen(miss), miss); //Codifiquem el missatge seguint el protocol establert
 		  
 		  midaMiss = MI_EnviaLinia(scon, missCod); //Enviem el missatge
 	
