@@ -155,13 +155,17 @@ int TCP_AcceptaConnexio(int Sck, char *IPrem, int *portTCPrem)
 	struct sockaddr_in adrrem; 
 	 
 	int long_adrrem=sizeof(adrrem); 
-	 if((scon=accept(Sck,(struct sockaddr*)&adrrem, &long_adrrem))==-1) 
-	 { 
-	  perror("Error en accept"); 
-	  close(Sck); 
-	  exit(-1); 
-	 } 
-	 return scon;
+	if((scon=accept(Sck,(struct sockaddr*)&adrrem, &long_adrrem))==-1) 
+	{ 
+		perror("Error en accept"); 
+		close(Sck); 
+		exit(-1); 
+	} 
+	 
+	strcpy(IPrem, inet_ntoa(adrrem.sin_addr));
+	*portTCPrem = ntohs(adrrem.sin_port);
+	 
+	return scon;
 }
 
 /* Envia a través del socket TCP “connectat” d’identificador “Sck” la     */
