@@ -11,7 +11,6 @@
 
 /* Inclusió de llibreries, p.e. #include <stdio.h> o #include "meu.h"     */
 /* Incloem "MIp1v4-mi.h" per poder fer crides a la interfície de MI       */
-#include "MIp1v2-t.h"
 #include <stdlib.h> 
 #include <stdio.h> 
 #include <string.h> 
@@ -19,7 +18,8 @@
 #include <sys/socket.h> 
 #include <netinet/in.h> 
 #include <arpa/inet.h> 
-#include <unistd.h> 
+#include <unistd.h>
+#include <ifaddrs.h>
 #include "MIp1v2-t.h"
 #include "MIp1v4-mi.h"
 
@@ -28,6 +28,30 @@
 /* Declaració de funcions INTERNES que es fan servir en aquest fitxer     */
 /* (les seves definicions es troben més avall) per així fer-les conegudes */
 /* des d'aqui fins al final de fitxer.                                    */
+
+/*Funció per trobar una adreça IP global*/
+
+void obtenirIPGlobal(char *ipGlobal){
+	struct ifaddrs *ifap, *ifa;
+    struct sockaddr_in *sockadress;
+    char *address;
+
+    getifaddrs (&ifap); //ens retorna una llista d'adreçes amb diferent informació en cada element de la llista
+    ifa = ifap;
+    
+    for (ifa; ifa->ifa_next!=NULL; ifa = ifa->ifa_next) { //mentre no arribem al final de la llista
+        if (ifa->ifa_addr->sa_family == AF_INET) { //si pertany a la familia AF_INET (ifa_addr és de tipus sockaddr)
+            sockadress = (struct sockaddr_in *) ifa->ifa_addr; //fem un cast de ifa_addr
+            address = inet_ntoa(sockadress->sin_addr); //funció inversa a inet_addr(), ens retorna l'adreça ip
+            if(ifa->ifa_name[0] != 'l')
+            {
+				strcpy(ipGlobal, address); //si la interfície de l'adreça no és "loopback" l'agafem
+			}
+        }
+    }
+    freeifaddrs(ifap); //alliberem memòria
+}
+
 
 /* Funció main()                                                          */
 
@@ -40,51 +64,67 @@ int main(int argc,char *argv[])
 	int portRemot;
 	int portLocal;
 	char miss[200], missCod[200];
-	miss[0] = ' ';
 	char IPRemot[20];
 	char IPLocal[20];
 	char nickLoc[200], nickRem[200], nickLocCod[200], nickRemCod[200]; 
 
-	printf("Escriu el teu nick:\n ");  //S'HA DE CODIFICAR EL NICK
+	printf("Entra el teu nick:\n "); 
 	int aux_nickLoc = read(0, nickLoc, sizeof(nickLoc));
 	nickLoc[aux_nickLoc-1] = '\0';
 	
-	/*Codifiquem el nick*/
-	sprintf(nickLocCod, "%c%03d%s", 'N', sizeof(nickLoc), nickLoc);
+	sprintf(nickLocCod, "%c%03d%s", 'N', strlen(nickLoc), nickLoc); //Codifiquem el nick seguint el protocol establert
 	
 	
-	
-	printf("Escriu el port del socket servidor:\n ");  //MILLORA: ENTREM 0 I HO AGAFA ALEOATORIAMENT
+	obtenirIPGlobal(IPLocal); //Obtenim una IP que no sigui la de retorn
+		
+	printf("Escriu el port TCP del socket servidor:\n ");
 	scanf("%d", &portServidor);
 	 
-	sesc = MI_IniciaEscPetiRemConv(portServidor);
+	sesc = MI_IniciaEscPetiRemConv(IPLocal,portServidor); //Creem socket servidor amb l'ip trobada anteriorment i un port que ens entra l'usuari;
 	
-	//printf("Sesc: %d", sesc);
-		
-	printf("Introdueix la IP a on et vols connectar:\n ");
+	printf("Socket servidor creat amb @IP: %s, i port TCP: %d\n",IPLocal,portServidor); //Mostrem informació del socket servidor
+			
+	printf("Introdueix la @IP a on et vols connectar:\n ");
 	
 	int ha_arribat = MI_HaArribatPetiConv(sesc);
 	
-	if(ha_arribat == -1)
+	if(ha_arribat == -1) //Error
 	{
 		perror("Error, a l'arribar alguna cosa");
 		return -1;
 	}
-	else if (ha_arribat == 0) 
+	else if (ha_arribat == 0) //Entrem informació per teclat
 	{
 		scanf("%s", IPRemot);
 				
-		printf("Introdueix el port al que et vols connectar:\n");
+		printf("Introdueix el port TCP al que et vols connectar:\n");
 		scanf("%d", &portRemot);
-		//printf("arribo");
+		
 		scon = MI_DemanaConv(IPRemot, portRemot, IPLocal, &portLocal, nickLocCod, nickRemCod);
 		
+		//Mostrem informació dels sockets connectats
+		printf("Socket local amb @IP: %s, i port TCP: %d\n",IPLocal,portLocal);
+		printf("Socket remot amb @IP: %s, i port TCP: %d\n",IPRemot,portRemot);
+		
 	}
-	else {
+	else { //Ens arriba una petició de connexió
 		scon = MI_AcceptaConv(sesc, IPRemot, &portRemot, IPLocal, &portLocal, nickLocCod, nickRemCod);
+		
+		//Mostrem informació dels sockets connectats
+		printf("Socket local amb @IP: %s, i port TCP: %d\n",IPLocal,portLocal);
+		printf("Socket remot amb @IP: %s, i port TCP: %d\n",IPRemot,portRemot);
 	}
 	
-	/*Descodifiquem el nickRemCod*/
+	//Ja ens hem connectat!
+	
+	if(nickRemCod[0] != 'N') //Si el missatge no segueix el protocol establert
+	{ 
+		perror("El nick no segueix el protocol!");
+		close(scon);
+		exit(-1);
+	}
+	
+	//Si segueix el protocol estipulat, descodifiquem el nickRemCod
 	int midaNick = 100*(nickRemCod[1]-'0') + 10*(nickRemCod[2]-'0') + (nickRemCod[3]-'0');
 	
 	int byte;
@@ -94,39 +134,43 @@ int main(int argc,char *argv[])
 	}
 	
 	nickRem[byte] = '\0';
+	/*Nick remot descodificat*/
 	
-	printf("%s i %s s'han connectat correctament...\n", nickLoc, nickRem);
-	printf("Començem a xatejar:\n");
+	printf("%s i %s us heu connectat correctament!\n", nickLoc, nickRem);
+	printf("Ja podeu començar a xatejar!\n");
 	
 	do{
-		ha_arribat = MI_HaArribatLinia(scon);
+		if((ha_arribat = MI_HaArribatLinia(scon))==-1) exit(-1); //ERROR!
 		if (ha_arribat == 0) //Envia missatge
 		{
 		  midaMiss = read(0, miss, sizeof(miss));
 		  miss[midaMiss-1] = '\0';
 		  
-		  if (miss[0] == '#')
+		  if (miss[0] == '#') //Senyal acabament conversa
 		  {
 			  printf("T'has desconnectat\n");
 		  }
-		  //printf("%s\n", nickLoc);
 		  
-		  /*Codifiquem el missatge*/
-		  sprintf(missCod, "%c%03d%s", 'L', sizeof(miss), miss);
+		  sprintf(missCod, "%c%03d%s", 'L', strlen(miss), miss); //Codifiquem el missatge seguint el protocol establert
 		  
-		  midaMiss = MI_EnviaLinia(scon, missCod);
+		  midaMiss = MI_EnviaLinia(scon, missCod); //Enviem el missatge
 	
-		} else //rep missatge
+		}
+		else //Rep missatge
 		{
-			midaMiss = MI_RepLinia(scon, missCod);
+			midaMiss = MI_RepLinia(scon, missCod); //Rebem el missatge
 			
-						
-			//printf("Mida del missatge: %d\n", midaMiss);
-			if (midaMiss == -1) {exit(-1);}
-			/*else if (midaMiss == 0) printf("L'usuari s'ha desconectat");*/
+			
+			if (midaMiss == -1) {exit(-1);} //Error
+			else if (missCod[0] != 'L') //Comprovem que el missatge segueixi el protocol
+			{
+				perror("El missatge no segueix el protocol!");
+				close(scon);
+				exit(-1);
+			}
 			else
 			{
-				/*Descodifiquem el missatge*/
+				//Descodifiquem el missatge
 				int midaMiss = 100*(missCod[1]-'0') + 10*(missCod[2]-'0') + (missCod[3]-'0');
 
 				int byte;
@@ -137,18 +181,19 @@ int main(int argc,char *argv[])
 
 				miss[byte] = '\0';
 				
-				if (miss[0] == '#') printf("%s s'ha desconectat\n", nickRem);
+				//Missatge descodificat
+				
+				if (miss[0] == '#') printf("%s s'ha desconectat\n", nickRem); //Comprovem si el missatge és el senyal d'acabament de la conversa
 				else
 				{
-					printf("%s: %s\n",nickRem,miss);
+					printf("%s: %s\n",nickRem,miss); //Mostrem el missatge
 				}
 			}
 		}
 		
-	} while (miss[0]!='#');	
+	} while (miss[0]!='#');	//Mentre el missatge no sigui la marca de fi
 	
-	MI_AcabaConv(scon);
-	
+	MI_AcabaConv(scon); //Tanquem conexió i pleguem
  
 	return(0); 
  }

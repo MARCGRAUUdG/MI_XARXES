@@ -3,7 +3,7 @@
 /* P1 - MI amb sockets TCP/IP - Part I                                    */
 /* Fitxer capçalera de mi.c                                               */
 /*                                                                        */
-/* Autors: X, Y                                                           */
+/* Autors: Marc Grau i Xavier Roca                                        */
 /*                                                                        */
 /**************************************************************************/
 #include <stdlib.h>
@@ -16,7 +16,7 @@
 /* seran conegudes en ell.                                                */
 /* En termes de capes de l'aplicació, aquest conjunt de funcions EXTERNES */
 /* formen la interfície de la capa MI.                                    */
-int MI_IniciaEscPetiRemConv(int portTCPloc);
+int MI_IniciaEscPetiRemConv(char *IPLocal, int portTCPloc);
 int MI_HaArribatPetiConv(int SckEscMI);
 int MI_DemanaConv(const char *IPrem, int portTCPrem, char *IPloc, int *portTCPloc, const char *NicLoc, char *NicRem);
 int MI_AcceptaConv(int SckEscMI, char *IPrem, int *portTCPrem, char *IPloc, int *portTCPloc, const char *NicLoc, char *NicRem);

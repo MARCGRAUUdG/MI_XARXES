@@ -3,7 +3,7 @@
 /* P1 - MI amb sockets TCP/IP - Part I                                    */
 /* Fitxer capçalera de t.c                                                */
 /*                                                                        */
-/* Autors: X, Y                                                           */
+/* Autors: Marc Grau i Xavier Roca                                                        */
 /*                                                                        */
 /**************************************************************************/
 #include <stdlib.h>

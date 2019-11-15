@@ -4,7 +4,7 @@
 /* Fitxer mi.c que implementa la capa d'aplicació de MI, sobre la capa de */
 /* transport TCP (fent crides a la "nova" interfície de la capa TCP o     */
 /* "nova" interfície de sockets)                                          */
-/* Autors: X, Y                                                           */
+/* Autors: Marc Grau i Xavier Roca                                                           */
 /*                                                                        */
 /**************************************************************************/
 
@@ -42,10 +42,10 @@
 /* (és a dir, crea un socket “servidor” o en estat d’escolta – listen –). */
 /* Retorna -1 si hi ha error; l’identificador del socket d’escolta de MI  */
 /* creat si tot va bé.                                                    */
-int MI_IniciaEscPetiRemConv(int portTCPloc)
+int MI_IniciaEscPetiRemConv(char *IPLocal, int portTCPloc)
 {
 	int socket;
-	if((socket = TCP_CreaSockServidor("192.168.43.40", portTCPloc)) == -1)
+	if((socket = TCP_CreaSockServidor(IPLocal, portTCPloc)) == -1)
 	{
 		T_MostraError();
 		exit(-1);
@@ -102,6 +102,11 @@ int MI_DemanaConv(const char *IPrem, int portTCPrem, char *IPloc, int *portTCPlo
 		exit(-1);
 	}
 	
+	if(TCP_TrobaAdrSockLoc(socket, IPloc, portTCPloc) == -1){
+		T_MostraError();
+		return -1;
+	}
+	
 	if (TCP_Envia(socket, NicLoc, strlen(NicLoc)) == -1) {
 		T_MostraError();
 		exit(-1);
@@ -139,7 +144,11 @@ int MI_AcceptaConv(int SckEscMI, char *IPrem, int *portTCPrem, char *IPloc, int 
 		T_MostraError();
 		exit(-1);
 	}
-
+	
+	if(TCP_TrobaAdrSockLoc(socket, IPloc, portTCPloc) == -1){
+		T_MostraError();
+		return -1;
+	}
 
 	if(TCP_Rep(socket, NicRem, 200) == -1){
 		T_MostraError();
