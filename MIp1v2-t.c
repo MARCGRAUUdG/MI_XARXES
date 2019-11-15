@@ -4,7 +4,7 @@
 /* Fitxer t.c que "implementa" la capa de transport, o més ben dit, que   */
 /* encapsula les funcions de la interfície de sockets, en unes altres     */
 /* funcions més simples i entenedores: la "nova" interfície de sockets.   */
-/* Autors: X, Y                                                           */
+/* Autors: Marc Grau i Xavier Roca                                                       */
 /*                                                                        */
 /**************************************************************************/
 
@@ -57,15 +57,15 @@ int TCP_CreaSockClient(const char *IPloc, int portTCPloc)
 	}
 	
 	adrloc.sin_family=AF_INET; 
-	 adrloc.sin_port=htons(portTCPloc); 
-	 adrloc.sin_addr.s_addr=inet_addr(IPloc);    /* o bé: ...s_addr = INADDR_ANY */ 
-	 for(i=0;i<8;i++){adrloc.sin_zero[i]='\0';} 
-	 if((bind(scon,(struct sockaddr*)&adrloc,sizeof(adrloc)))==-1) 
-	 { 
-	  perror("Error en bind"); 
-	  close(scon); 
-	  exit(-1); 
-	 } 
+	adrloc.sin_port=htons(portTCPloc); 
+	adrloc.sin_addr.s_addr=inet_addr(IPloc);    /* o bé: ...s_addr = INADDR_ANY */ 
+	for(i=0;i<8;i++){adrloc.sin_zero[i]='\0';} 
+	if((bind(scon,(struct sockaddr*)&adrloc,sizeof(adrloc)))==-1) 
+	{ 
+	perror("Error en bind"); 
+	close(scon); 
+	exit(-1); 
+	} 
 	
 	return scon;
 }
