@@ -209,11 +209,17 @@ int MI_EnviaLinia(int SckConvMI, const char *Linia)
 int MI_RepLinia(int SckConvMI, char *Linia)
 {
 	int midaMiss;
-	if ((midaMiss = TCP_Rep(SckConvMI, Linia, 200)) == -1)
+	midaMiss = TCP_Rep(SckConvMI, Linia, 200);
+	if (midaMiss == -1)
 	{
 		perror("Error");
 	    exit(-1);
 	}
+	if (midaMiss == 0)
+	{
+		midaMiss=-2;
+	}
+	
 	return midaMiss;
 }
 

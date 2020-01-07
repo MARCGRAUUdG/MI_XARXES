@@ -68,6 +68,7 @@ int main(int argc,char *argv[])
 	char IPLocal[20];
 	char nickLoc[200], nickRem[200], nickLocCod[200], nickRemCod[200]; 
 	char novaConversa = 'a';
+	int usuariDesconectat = 0;
 
 	while (novaConversa!='N'){
 		printf("Entra el teu nick:\n "); 
@@ -141,6 +142,7 @@ int main(int argc,char *argv[])
 		printf("%s i %s us heu connectat correctament!\n", nickLoc, nickRem);
 		printf("Ja podeu començar a xatejar!\n");
 		
+		
 		do{
 			if((ha_arribat = MI_HaArribatLinia(scon))==-1) exit(-1); //ERROR!
 			if (ha_arribat == 0) //Envia missatge
@@ -150,12 +152,15 @@ int main(int argc,char *argv[])
 			  
 			  if (miss[0] == '#') //Senyal acabament conversa
 			  {
+				  usuariDesconectat=1;
 				  printf("T'has desconnectat\n");
 			  }
+			  else {  //El missatge es correcte
 			  
-			  sprintf(missCod, "%c%03d%s", 'L', strlen(miss), miss); //Codifiquem el missatge seguint el protocol establert
-			  
-			  midaMiss = MI_EnviaLinia(scon, missCod); //Enviem el missatge
+				  sprintf(missCod, "%c%03d%s", 'L', strlen(miss), miss); //Codifiquem el missatge seguint el protocol establert
+				  
+				  midaMiss = MI_EnviaLinia(scon, missCod); //Enviem el missatge
+			  }
 		
 			}
 			else //Rep missatge
@@ -164,6 +169,10 @@ int main(int argc,char *argv[])
 				
 				
 				if (midaMiss == -1) {exit(-1);} //Error
+				else if (midaMiss == -2){
+					usuariDesconectat = 1;
+                    printf("L'usuari %s s'ha desconnectat.\n", nickRem);
+                }
 				else if (missCod[0] != 'L') //Comprovem que el missatge segueixi el protocol
 				{
 					perror("El missatge no segueix el protocol!");
@@ -184,16 +193,12 @@ int main(int argc,char *argv[])
 					miss[byte] = '\0';
 					
 					//Missatge descodificat
-					
-					if (miss[0] == '#') printf("%s s'ha desconectat\n", nickRem); //Comprovem si el missatge és el senyal d'acabament de la conversa
-					else
-					{
-						printf("%s: %s\n",nickRem,miss); //Mostrem el missatge
-					}
+								
+					printf("%s: %s\n",nickRem,miss); //Mostrem el missatge
 				}
 			}
 			
-		} while (miss[0]!='#');	//Mentre el missatge no sigui la marca de fi
+		} while (usuariDesconectat==0);	//Mentre un dels dos no acabi la conversa
 		
 		MI_AcabaConv(scon); //Tanquem conexió i pleguem
 		
